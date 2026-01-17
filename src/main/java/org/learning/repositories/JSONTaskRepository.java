@@ -27,28 +27,29 @@ public class JSONTaskRepository implements ITaskRepository {
 
                 this.writeJsonArray(array);
             }
-
-            this.currentId = getJsonArrayBuilder().build().size() + 1;
         }
+
+        this.currentId = getJsonArrayBuilder().build().size() + 1;
     }
 
     @Override
-    public void save(Task task) throws IOException {
+    public int save(Task task) throws IOException {
         Date date = new Date();
         JsonObject jsonObject = Json.createObjectBuilder()
                 .add("id", this.currentId)
                 .add("description", task.getDescription())
                 .add("status", task.getStatus().toString())
                 .add("createdAt", date.toString())
-                .add("updateAt", date.toString())
+                .add("updatedAt", date.toString())
                 .build();
 
         JsonArrayBuilder arrayBuilder = this.getJsonArrayBuilder();
         JsonArray array = arrayBuilder.add(jsonObject).build();
 
         this.writeJsonArray(array);
-
         this.currentId++;
+
+        return jsonObject.getInt("id");
     }
 
     @Override

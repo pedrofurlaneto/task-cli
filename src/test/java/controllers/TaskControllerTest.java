@@ -17,10 +17,10 @@ public class TaskControllerTest {
     void mustCreateTask() throws IOException {
         ITaskRepository taskRepository = new InMemoryTaskRepository();
         TaskController taskController = new TaskController(taskRepository);
-        Task newTask = taskController.create("Buy fish");
+        int id = taskController.create("Buy fish");
 
-        assertEquals("Buy fish", newTask.getDescription());
-        assertEquals(TaskStatus.TODO, newTask.getStatus());
+        assertEquals("Buy fish", taskController.getById(1).getDescription());
+        assertEquals(TaskStatus.TODO, taskController.getById(1).getStatus());
     }
 
     @Test

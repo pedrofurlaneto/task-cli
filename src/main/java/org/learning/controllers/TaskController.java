@@ -14,11 +14,10 @@ public class TaskController {
         this.repository = repository;
     }
 
-    public Task create(String name) throws IOException {
+    public int create(String name) throws IOException {
         Task newTask = new Task(name);
 
-        this.repository.save(newTask);
-        return newTask;
+        return this.repository.save(newTask);
     }
 
     public void updateDescription(int id, String description) throws IOException {

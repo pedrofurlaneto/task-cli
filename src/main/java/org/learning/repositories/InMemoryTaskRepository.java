@@ -10,8 +10,10 @@ public class InMemoryTaskRepository implements ITaskRepository {
     private final List<Task> tasks = new ArrayList<>();
 
     @Override
-    public void save(Task task) {
+    public int save(Task task) {
         tasks.add(task);
+
+        return tasks.size();
     }
 
     @Override

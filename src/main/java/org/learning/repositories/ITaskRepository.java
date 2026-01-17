@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ITaskRepository {
-    void save(Task task) throws IOException;
+    int save(Task task) throws IOException;
     void remove(int id) throws IOException;
     void updateDescription(int id, String description) throws IOException;
     void updateStatus(int id, TaskStatus status) throws IOException;

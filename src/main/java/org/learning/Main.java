@@ -1,7 +1,14 @@
 package org.learning;
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+
+import org.learning.controllers.CommandDispatcher;
+
 public class Main {
-    static void main(String[] args) {
+    public static void main(String[] args) {
+        try {
+            CommandDispatcher.dispatch(args);
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Commands: add, update, delete, list, mark-done, mark-in-progress");
+        }
     }
 }
