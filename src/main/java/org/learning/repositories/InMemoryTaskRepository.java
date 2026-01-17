@@ -7,11 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InMemoryTaskRepository implements ITaskRepository {
-    private final List<Task> tasks;
-
-    public InMemoryTaskRepository() {
-        this.tasks = new ArrayList<>();
-    }
+    private final List<Task> tasks = new ArrayList<>();
 
     @Override
     public void save(Task task) {

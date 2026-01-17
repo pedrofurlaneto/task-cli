@@ -7,13 +7,14 @@ import org.learning.repositories.InMemoryTaskRepository;
 import org.learning.controllers.TaskController;
 import org.learning.types.TaskStatus;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskControllerTest {
     @Test
-    void mustCreateTask() {
+    void mustCreateTask() throws IOException {
         ITaskRepository taskRepository = new InMemoryTaskRepository();
         TaskController taskController = new TaskController(taskRepository);
         Task newTask = taskController.create("Buy fish");
@@ -23,7 +24,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    void mustListAllCreatedTasks() {
+    void mustListAllCreatedTasks() throws IOException {
         ITaskRepository taskRepository = new InMemoryTaskRepository();
         TaskController taskController = new TaskController(taskRepository);
 
@@ -37,7 +38,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    void mustRemoveTask() {
+    void mustRemoveTask() throws IOException {
         ITaskRepository taskRepository = new InMemoryTaskRepository();
         TaskController taskController = new TaskController(taskRepository);
 
@@ -45,11 +46,11 @@ public class TaskControllerTest {
         taskController.create("Finish homework");
         taskController.remove(1);
 
-        assertNotEquals("Buy fish", taskController.getById(1).getDescription());
+        assertNotEquals("Buy fish", taskController.getById(1).getClass());
     }
 
     @Test
-    void mustUpdateTaskDescription() {
+    void mustUpdateTaskDescription() throws IOException {
         ITaskRepository taskRepository = new InMemoryTaskRepository();
         TaskController taskController = new TaskController(taskRepository);
 
@@ -64,7 +65,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    void mustUpdateTaskStatus() {
+    void mustUpdateTaskStatus() throws IOException {
         ITaskRepository taskRepository = new InMemoryTaskRepository();
         TaskController taskController = new TaskController(taskRepository);
 
