@@ -13,5 +13,6 @@ public interface ITaskRepository {
     void updateDescription(int id, String description) throws IOException;
     void updateStatus(int id, TaskStatus status) throws IOException;
     List<Task> list() throws IOException;
+    List<Task> list(TaskStatus status) throws IOException;
     Task getById(int id) throws IOException;
 }

@@ -3,8 +3,10 @@ package org.learning.repositories;
 import org.learning.models.Task;
 import org.learning.types.TaskStatus;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskRepository implements ITaskRepository {
     private final List<Task> tasks = new ArrayList<>();
@@ -44,6 +46,14 @@ public class InMemoryTaskRepository implements ITaskRepository {
     @Override
     public List<Task> list() {
         return tasks;
+    }
+
+    @Override
+    public List<Task> list(TaskStatus status) throws IOException
+    {
+        return tasks.stream()
+                .filter(task -> task.getStatus() == status)
+                .collect(Collectors.toList());
     }
 
     @Override

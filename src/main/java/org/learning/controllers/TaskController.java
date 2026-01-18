@@ -39,4 +39,8 @@ public class TaskController {
     public List<Task> list() throws IOException {
         return this.repository.list();
     }
+
+    public List<Task> list(String status) throws IOException {
+        return this.repository.list(TaskStatus.from(status));
+    }
 }

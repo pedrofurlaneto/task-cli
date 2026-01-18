@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class JSONTaskRepository implements ITaskRepository {
     final Path filePath;
@@ -132,6 +133,22 @@ public class JSONTaskRepository implements ITaskRepository {
 
                     return task;
                 })
+                .toList();
+    }
+
+    @Override
+    public List<Task> list(TaskStatus status) throws IOException {
+        JsonArray array = this.getJsonArrayBuilder().build();
+
+        return array.stream()
+                .map(JsonValue::asJsonObject)
+                .map(obj -> {
+                    Task task = new Task(obj.getString("description"));
+                    task.setStatus(TaskStatus.valueOf(obj.asJsonObject().getString("status")));
+
+                    return task;
+                })
+                .filter(task -> task.getStatus() == status)
                 .toList();
     }
 
