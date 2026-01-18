@@ -13,7 +13,7 @@ public class MarkDoneCommand implements ICommand {
     @Override
     public void execute(String[] args) {
         if (args.length < 2) {
-            System.out.println("Usage: task-tracker mark-done [id]");
+            System.out.println("Usage: task-cli mark-done [id]");
             return;
         }
 

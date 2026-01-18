@@ -26,6 +26,7 @@ public class CommandDispatcher {
 
         TaskController controller = new TaskController(repository);
 
+        commands.put(CommandType.LIST, new ListCommand(controller));
         commands.put(CommandType.ADD, new SaveCommand(controller));
         commands.put(CommandType.UPDATE, new UpdateCommand(controller));
         commands.put(CommandType.DELETE, new DeleteCommand(controller));

@@ -12,7 +12,7 @@ public class DeleteCommand implements ICommand {
     @Override
     public void execute(String[] args) {
         if (args.length < 2) {
-            System.out.println("Usage: task-tracker delete [id]");
+            System.out.println("Usage: task-cli delete [id]");
             return;
         }
 

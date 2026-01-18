@@ -13,7 +13,7 @@ public class UpdateCommand implements ICommand {
     @Override
     public void execute(String[] args) {
         if (args.length < 3) {
-            System.out.println("Usage: task-tracker update [id] [new description]");
+            System.out.println("Usage: task-cli update [id] [new description]");
             return;
         }
 

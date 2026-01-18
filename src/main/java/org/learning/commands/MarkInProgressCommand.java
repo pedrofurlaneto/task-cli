@@ -13,7 +13,7 @@ public class MarkInProgressCommand implements ICommand {
     @Override
     public void execute(String[] args) {
         if (args.length < 2) {
-            System.out.println("Usage: task-tracker mark-in-progress [id]");
+            System.out.println("Usage: task-cli mark-in-progress [id]");
             return;
         }
 
