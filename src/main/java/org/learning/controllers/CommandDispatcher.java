@@ -33,6 +33,7 @@ public class CommandDispatcher {
         commands.put(CommandType.ADD, new SaveCommand(controller));
         commands.put(CommandType.UPDATE, new UpdateCommand(controller));
         commands.put(CommandType.DELETE, new DeleteCommand(controller));
+        commands.put(CommandType.MARK_TODO, new MarkTodoCommand(controller));
         commands.put(CommandType.MARK_IN_PROGRESS, new MarkInProgressCommand(controller));
         commands.put(CommandType.MARK_DONE, new MarkDoneCommand(controller));
     }

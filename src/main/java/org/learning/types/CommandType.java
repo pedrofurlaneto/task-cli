@@ -5,6 +5,7 @@ public enum CommandType {
     UPDATE("update"),
     DELETE("delete"),
     LIST("list"),
+    MARK_TODO("mark-todo"),
     MARK_IN_PROGRESS("mark-in-progress"),
     MARK_DONE("mark-done");
 

@@ -53,6 +53,33 @@ public class TaskControllerTest {
     }
 
     @Test
+    void mustListWithFilter() throws IOException {
+        Path tempFilePath = tempPath.resolve("tasks.json");
+
+        ITaskStorage storage = new JsonTaskStorage(tempFilePath);
+        ITaskRepository repository = new JsonTaskRepository(storage);
+        TaskController controller = new TaskController(repository);
+
+        controller.create("Buy fish");
+        controller.create("Finish homework");
+        controller.create("Send emails");
+        controller.create("Make the dinner");
+
+        controller.updateStatus(2, TaskStatus.IN_PROGRESS);
+        controller.updateStatus(3, TaskStatus.IN_PROGRESS);
+        controller.updateStatus(4, TaskStatus.DONE);
+
+        List<Task> tasksTodo = controller.list("todo");
+        List<Task> tasksInProgress = controller.list("in-progress");
+        List<Task> tasksDone = controller.list("done");
+
+        assertEquals(1, tasksTodo.size());
+        assertEquals(2, tasksInProgress.size());
+        assertEquals(1, tasksDone.size());
+    }
+
+
+    @Test
     void mustRemoveTask() throws IOException {
         Path tempFilePath = tempPath.resolve("tasks.json");
 
@@ -105,5 +132,8 @@ public class TaskControllerTest {
         assertEquals(TaskStatus.DONE, controller.getById(1).getStatus());
         assertEquals(TaskStatus.TODO, controller.getById(2).getStatus());
         assertEquals(TaskStatus.IN_PROGRESS, controller.getById(3).getStatus());
+
+        controller.updateStatus(1, TaskStatus.TODO);
+        assertEquals(TaskStatus.TODO, controller.getById(1).getStatus());
     }
 }
