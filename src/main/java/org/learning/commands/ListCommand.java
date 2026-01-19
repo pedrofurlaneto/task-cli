@@ -2,9 +2,9 @@ package org.learning.commands;
 
 import org.learning.controllers.TaskController;
 import org.learning.models.Task;
-import org.learning.types.TaskStatus;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ListCommand implements ICommand {
@@ -30,11 +30,17 @@ public class ListCommand implements ICommand {
                 tasks = controller.list();
             }
 
+            System.out.println("ID | Description | Status | Created at | Updated at");
             for (Task task : tasks) {
-                System.out.printf("%s: %s%n", task.getDescription(), task.getStatus().getValue());
+                System.out.printf("%d | %s | %s | %s | %s%n", task.getId(), task.getDescription(), task.getStatus().getValue(), formatDate(task.getCreatedAt()), formatDate(task.getUpdatedAt()));
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
+    }
+
+    String formatDate(LocalDateTime date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return date.format(formatter);
     }
 }

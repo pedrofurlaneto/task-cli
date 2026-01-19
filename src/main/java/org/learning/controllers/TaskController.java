@@ -15,7 +15,8 @@ public class TaskController {
     }
 
     public int create(String name) throws IOException {
-        Task newTask = new Task(name);
+        int id = repository.generateNextId();
+        Task newTask = new Task(id, name);
 
         return this.repository.save(newTask);
     }

@@ -15,4 +15,5 @@ public interface ITaskRepository {
     List<Task> list() throws IOException;
     List<Task> list(TaskStatus status) throws IOException;
     Task getById(int id) throws IOException;
+    int generateNextId();
 }

@@ -70,4 +70,9 @@ public class InMemoryTaskRepository implements ITaskRepository {
 
         return this.tasks.get(index);
     }
+
+    @Override
+    public int generateNextId() {
+        return this.tasks.size() + 1;
+    }
 }

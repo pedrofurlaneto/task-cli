@@ -16,8 +16,10 @@ public enum TaskStatus {
     }
 
     public static TaskStatus from(String input) {
+        String normalized = input.toLowerCase().replace("_", "-");
+
         for (TaskStatus taskStatus : values()) {
-            if (taskStatus.status.equalsIgnoreCase(input)) {
+            if (taskStatus.status.equalsIgnoreCase(normalized)) {
                 return taskStatus;
             }
         }
