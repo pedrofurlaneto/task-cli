@@ -14,18 +14,30 @@ public class TaskController {
         this.repository = repository;
     }
 
-    public int create(String name) throws IOException {
+    public int create(String description) throws IOException {
+        if (description == null || description.isEmpty()) {
+            throw new IllegalArgumentException("Task description can't be empty");
+        }
+
         int id = repository.generateNextId();
-        Task newTask = new Task(id, name);
+        Task newTask = new Task(id, description);
 
         return this.repository.save(newTask);
     }
 
     public void updateDescription(int id, String description) throws IOException {
+        if (description == null || description.isEmpty()) {
+            throw new IllegalArgumentException("Task description can't be empty");
+        }
+
         this.repository.updateDescription(id, description);
     }
 
     public void updateStatus(int id, TaskStatus status) throws IOException {
+        if (status == null) {
+            throw new IllegalArgumentException("Task status can't be empty");
+        }
+
         this.repository.updateStatus(id, status);
     }
 
