@@ -30,13 +30,17 @@ public class Task {
     public int getId() {
         return id;
     }
-
     public String getDescription() {
         return description;
     }
-
     public TaskStatus getStatus() {
         return status;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     public void setDescription(String description) {
@@ -47,13 +51,5 @@ public class Task {
     public void setStatus(TaskStatus status) {
         this.status = status;
         updatedAt = LocalDateTime.now();
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 }

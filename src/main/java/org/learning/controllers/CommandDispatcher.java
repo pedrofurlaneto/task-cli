@@ -3,6 +3,8 @@ package org.learning.controllers;
 import org.learning.commands.*;
 import org.learning.repositories.ITaskRepository;
 import org.learning.repositories.JsonTaskRepository;
+import org.learning.storages.ITaskStorage;
+import org.learning.storages.JsonTaskStorage;
 import org.learning.types.CommandType;
 
 import java.io.IOException;
@@ -19,7 +21,8 @@ public class CommandDispatcher {
         ITaskRepository repository;
 
         try {
-            repository = new JsonTaskRepository(filePath);
+            ITaskStorage storage = new JsonTaskStorage(filePath);
+            repository = new JsonTaskRepository(storage);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

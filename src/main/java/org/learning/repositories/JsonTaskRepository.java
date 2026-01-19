@@ -2,136 +2,87 @@ package org.learning.repositories;
 
 import jakarta.json.*;
 import org.learning.models.Task;
+import org.learning.storages.ITaskStorage;
 import org.learning.types.TaskStatus;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class JsonTaskRepository implements ITaskRepository {
-    final Path filePath;
+    private final ITaskStorage storage;
     int currentId;
 
-    public JsonTaskRepository(Path filePath) throws IOException {
-        this.filePath = filePath;
+    public JsonTaskRepository(ITaskStorage storage) throws IOException {
+        this.storage = storage;
 
-        if (Files.notExists(this.filePath)) {
-            Files.createFile(this.filePath);
-
-            if (Files.size(this.filePath) == 0) {
-                JsonArray array = Json.createArrayBuilder().build();
-
-                this.writeJsonArray(array);
-            }
+        if (this.storage.exists()) {
+            this.storage.initialize();
         }
 
-        this.currentId = getJsonArrayBuilder().build().size() + 1;
+        this.currentId = this.storage.readAll().size() + 1;
     }
 
     @Override
     public int save(Task task) throws IOException {
-        LocalDateTime now = LocalDateTime.now();
-        JsonObject jsonObject = Json.createObjectBuilder()
-                .add("id", this.currentId)
-                .add("description", task.getDescription())
-                .add("status", task.getStatus().toString())
-                .add("createdAt", now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
-                .add("updatedAt", now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
-                .build();
-
-        JsonArrayBuilder arrayBuilder = this.getJsonArrayBuilder();
-        JsonArray array = arrayBuilder.add(jsonObject).build();
-
-        this.writeJsonArray(array);
+        List<Task> tasks = storage.readAll();
+        tasks.add(task);
+        storage.writeAll(tasks);
         this.currentId++;
 
-        return jsonObject.getInt("id");
+        return task.getId();
     }
 
     @Override
     public void remove(int id) throws IOException {
-        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        JsonArray jsonArray = this.getJsonArrayBuilder().build();
-
-        for (JsonValue value : jsonArray) {
-            if (value.asJsonObject().getInt("id") == id) {
-                continue;
-            }
-
-            arrayBuilder.add(value);
+        if (id <= 0) {
+            throw new IllegalArgumentException("Invalid Task ID argument");
         }
 
-        this.writeJsonArray(arrayBuilder.build());
+        List<Task> tasks = storage.readAll();
+        boolean removed = tasks.removeIf(task -> task.getId() == id);
+
+        if (!removed) {
+            throw new NoSuchElementException(String.format("Task with ID %d not found", id));
+        }
+
+        storage.writeAll(tasks);
         this.currentId--;
     }
 
     @Override
     public void updateDescription(int id, String description) throws IOException {
-        Date date = new Date();
+        Task taskToUpdate = getById(id);
+        taskToUpdate.setDescription(description);
 
-        JsonArray array = this.getJsonArrayBuilder().build();
-        JsonArrayBuilder updatedArray = Json.createArrayBuilder();
-
-        for (JsonValue value : array) {
-            JsonObject obj = value.asJsonObject();
-
-            if (obj.getInt("id") == id) {
-                JsonObject updatedTask = Json.createObjectBuilder(obj)
-                        .add("description", description)
-                        .add("updatedAt", date.getTime())
-                        .build();
-
-                updatedArray.add(updatedTask);
-                continue;
-            }
-
-            updatedArray.add(obj);
-        }
-
-        this.writeJsonArray(updatedArray.build());
+        updateTask(id, taskToUpdate);
     }
 
     @Override
     public void updateStatus(int id, TaskStatus status) throws IOException {
-        Date date = new Date();
+        Task taskToUpdate = getById(id);
+        taskToUpdate.setStatus(status);
 
-        JsonArray array = this.getJsonArrayBuilder().build();
-        JsonArrayBuilder updatedArray = Json.createArrayBuilder();
+        updateTask(id, taskToUpdate);
+    }
 
-        for (JsonValue value : array) {
-            JsonObject obj = value.asJsonObject();
+    private void updateTask(int id, Task taskToUpdate) throws IOException {
+        List<Task> tasks = storage.readAll();
+        List<Task> updatedTasks = tasks.stream()
+                .map(task -> {
+                    if (task.getId() == id) {
+                        task = taskToUpdate;
+                    }
 
-            if (obj.getInt("id") == id) {
-                JsonObject updatedTask = Json.createObjectBuilder(obj)
-                        .add("status", String.valueOf(status))
-                        .add("updatedAt", date.getTime())
-                        .build();
+                    return task;
+                }).toList();
 
-                updatedArray.add(updatedTask);
-                continue;
-            }
-
-            updatedArray.add(obj);
-        }
-
-        this.writeJsonArray(updatedArray.build());
+        storage.writeAll(updatedTasks);
     }
 
     @Override
     public List<Task> list() throws IOException {
-        JsonArray array = this.getJsonArrayBuilder().build();
-
-        return array.stream()
-                .map(JsonValue::asJsonObject)
-                .map(this::createTaskFromJsonObject)
-                .toList();
+        return storage.readAll();
     }
 
     @Override
@@ -145,66 +96,20 @@ public class JsonTaskRepository implements ITaskRepository {
 
     @Override
     public Task getById(int id) throws IOException {
-        JsonObject obj = this.getJsonObjectByTaskId(id);
-
-        if (obj != null && !obj.isEmpty()) {
-            return createTaskFromJsonObject(obj);
+        if (id <= 0) {
+            throw new IllegalArgumentException("Invalid Task ID argument");
         }
 
-        return null;
+        List<Task> tasks = storage.readAll();
+
+        return tasks.stream()
+                .filter(task -> task.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException(String.format("Task with ID %d not found", id)));
     }
 
     @Override
     public int generateNextId() {
-        return this.currentId + 1;
-    }
-
-    private void writeJsonArray(JsonArray array) throws IOException {
-        try (Writer writer = Files.newBufferedWriter(this.filePath);
-             JsonWriter jsonWriter = Json.createWriter(writer)) {
-            jsonWriter.writeArray(array);
-        }
-    }
-
-    private JsonArrayBuilder getJsonArrayBuilder() throws IOException {
-        try (Reader reader = Files.newBufferedReader(this.filePath);
-             JsonReader jsonReader = Json.createReader(reader)) {
-
-            return Json.createArrayBuilder(jsonReader.readArray());
-        }
-    }
-
-    Task createTaskFromJsonObject(JsonObject object) {
-        TaskStatus status = TaskStatus.from(object.getString("status"));
-        LocalDateTime createdAt = transformTimestampToLocalDateTime(object.getJsonNumber("createdAt").longValue());
-        LocalDateTime updatedAt = transformTimestampToLocalDateTime(object.getJsonNumber("updatedAt").longValue());
-
-        return new Task(
-                object.getInt("id"),
-                object.getString("description"),
-                status,
-                createdAt,
-                updatedAt
-        );
-    }
-
-    JsonObject getJsonObjectByTaskId(int id) throws IOException {
-        JsonArray array = this.getJsonArrayBuilder().build();
-
-        for (JsonValue value : array) {
-            JsonObject obj = value.asJsonObject();
-
-            if (obj.getInt("id") == id) {
-                return obj;
-            }
-        }
-
-        return null;
-    }
-
-    LocalDateTime transformTimestampToLocalDateTime(long timestamp) {
-        return LocalDateTime.ofInstant(
-                Instant.ofEpochMilli(timestamp),
-                ZoneId.systemDefault());
+        return this.currentId;
     }
 }
